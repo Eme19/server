@@ -11,6 +11,11 @@ const express = require("express");
 
 const app = express();
 
+app.use((req, res, next) => {
+    res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+    res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+    next();
+  });
 
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
 require("./config")(app);
@@ -45,6 +50,10 @@ app.use("/api", searchRoutes)
 
 const appactivityRoutes = require("./routes/appactivity.routes");
 app.use("/activity", appactivityRoutes)
+
+const googleAuthRoutes = require("./routes/googleid.routes");
+app.use("/google", googleAuthRoutes)
+
 
 const streamRoutes = require("./routes/streaming.routes");
 app.use("/stream", streamRoutes)

@@ -49,11 +49,10 @@ router.post("/track",  fileUploader.single('mp3file'), async (req, res, next) =>
 }
 );
 
-
-
 router.get('/audio/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    console.log('Received request for track ID:', id); 
     const track = await Track.findById(id);
     if (!track) {
       return res.status(404).json({ error: "Track not found" });
@@ -65,6 +64,22 @@ router.get('/audio/:id', async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// router.get('/audio/:id', async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     console.log('Received request for track ID:', id); 
+//     const track = await Track.findById(id);
+//     if (!track) {
+//       return res.status(404).json({ error: "Track not found" });
+//     }
+//     const audioUrl = cloudinary.url(track.filename, { resource_type: "auto" });
+//     return res.status(200).json({ audioUrl });
+//   } catch (err) {
+//     console.error("Error retrieving audio by ID:", err);
+//     return res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
 
 
 

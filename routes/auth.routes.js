@@ -7,6 +7,7 @@ const saltRounds = 10;
 const { isAuthenticated, isAdmin } = require("../middlewares/jwt.middleware");
 
 
+
 function isGmailOrYahooEmail(email) {
   const gmailPattern = /@(gmail\.com|googlemail\.com)$/i;
   const yahooPattern = /@(yahoo\.com|yahoo\.co\.[a-z]{2})$/i;
@@ -46,7 +47,7 @@ let userCount = 0;
 
 router.post("/signup", async (req, res, next) => {
   try {
-    const { username, email, password, state, country } = req.body;
+    const { username, email, password, state, country, consent } = req.body;
 
     if (!email || !password || !username) {
       return res.status(400).json({ message: "Please provide email, username, and password" });
@@ -83,20 +84,11 @@ router.post("/signup", async (req, res, next) => {
       password: hashedPassword,
       state,
       country,
+      consent,
     });
     userCount++;
 
-    res.status(201).json({ newUser: registerUser });
-
-    // const newUser = {
-    //   username,
-    //   email,
-    //   password: hashedPassword,
-    //   state,
-    //   country,
-    // };
-
-    // res.status(201).json({ newUser });
+    res.status(201).json({ user: registerUser });
   } catch (error) {
     console.error("Error during user registration:", error);
     return res.status(500).json({ message: "Internal Server Error" });
@@ -209,11 +201,44 @@ router.get("/verify", isAuthenticated, (req, res, next) => {
 });
 
 
+
+
+
 router.get("/admin", isAuthenticated, isAdmin, (req, res) => {
   res.json({ message: "Admin authenticated successfully!" });
 });
 
+
+
+router.post("/update-consent", async (req, res) => {
+  const { _id, consent } = req.body;
+  console.log("show me consent id if there Req.body", req.body)
+  
+  console.log("Received update consent request. User ID:", _id, "Consent:", consent);
+  try {
+    const  updatedUser = await User.findByIdAndUpdate(_id, { consent }, {new: true})
+    console.log("consent reponse",  updatedUser)
+    res.status(200).json({ message: "Consent updated successfully" });
+  } catch (error) {
+    console.error("Error updating consent:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
 module.exports = router;
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -273,13 +298,12 @@ module.exports = router;
 // });
 
 
-
+// let userCount = 0;
 
 // router.post("/signup", async (req, res, next) => {
 //   try {
-//     const { username, email, password, state, country } = req.body;
+//     const { username, email, password, state, country, consent } = req.body;
 
-  
 //     if (!email || !password || !username) {
 //       return res.status(400).json({ message: "Please provide email, username, and password" });
 //     }
@@ -315,22 +339,39 @@ module.exports = router;
 //       password: hashedPassword,
 //       state,
 //       country,
+//       consent,
 //     });
+//     userCount++;
 
-//     const newUser = {
-//       username,
-//       email,
-//       password: hashedPassword,
-//       state,
-//       country,
-//     };
-
-//     res.status(201).json({ newUser });
+//     res.status(201).json({ user: registerUser });
 //   } catch (error) {
 //     console.error("Error during user registration:", error);
 //     return res.status(500).json({ message: "Internal Server Error" });
 //   }
 // });
+
+// router.get('/user-count', async (req, res) => {
+//   try {
+//     const userCount = await User.countDocuments();
+//     res.json({ userCount });
+//   } catch (error) {
+//     console.error('Error fetching user count:', error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
+
+
+// router.get('/get-user', isAuthenticated, isAdmin, async (req, res) => {
+//   try {
+//     const users = await User.find({}, "username email");
+//     res.json({ users });
+//   } catch (error) {
+//     console.error('Error fetching user count:', error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
+
+
 
 
 
@@ -339,7 +380,7 @@ module.exports = router;
 //     const userId = req.params.id;
 //     const { username, email, password, state, country } = req.body;
 
-//     // Construct an object with the updated user profile fields
+   
 //     const updatedUserData = { username, email, password, state, country };
 
 
@@ -397,7 +438,7 @@ module.exports = router;
 //           algorithm: "HS256",
 //           expiresIn: "6h",
 //         });
-//         res.status(200).json({ authToken: authToken });
+//         res.status(200).json({ authToken: authToken, user: payload });
 //       } else {
 //         res.status(401).json({
 //           message: "Unable to authenticate the user",
@@ -410,16 +451,45 @@ module.exports = router;
 // });
 
 
-// router.get("/verify", isAuthenticated, (req, res, next) => {
-//   res.status(200).json(req.payload);
-// });
+router.get("/verify", isAuthenticated, (req, res, next) => {
+  res.status(200).json(req.payload);
+});
 
 
 // router.get("/admin", isAuthenticated, isAdmin, (req, res) => {
 //   res.json({ message: "Admin authenticated successfully!" });
 // });
 
+
+
+// router.post("/update-consent", async (req, res) => {
+//   const { _id, consent } = req.body;
+//   console.log("show me consent id if there Req.body", req.body)
+  
+//   console.log("Received update consent request. User ID:", _id, "Consent:", consent);
+//   try {
+//     const  updatedUser = await User.findByIdAndUpdate(_id, { consent }, {new: true})
+//     console.log("consent reponse",  updatedUser)
+//     res.status(200).json({ message: "Consent updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating consent:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
 // module.exports = router;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
