@@ -1,7 +1,5 @@
 
 const { expressjwt: jwt } = require("express-jwt");
-
-// Instantiate the JWT token validation middleware
 const isAuthenticated = jwt({
   secret: process.env.TOKEN_SECRET,
   algorithms: ["HS256"],
@@ -18,22 +16,22 @@ function getTokenFromHeaders(req) {
   return null;
 }
 
-// Middleware to check if the user has the "admin" role
+
 function isAdmin(req, res, next) {
   const { payload } = req;
 
-  // Check if the payload contains a "role" property with the value "admin"
+  
   if (payload && payload.role === "admin") {
-    next(); // User has admin role, proceed to the next middleware or route
+    next();
   } else {
-    // User does not have the admin role, return a 403 (Forbidden) response
+  
     return res.status(403).json({ error: "Access denied, not an admin" });
   }
 }
 
 module.exports = {
   isAuthenticated,
-  isAdmin // Export isAdmin middleware as well
+  isAdmin
 };
 
 

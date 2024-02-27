@@ -18,7 +18,7 @@ router.post('/start-streaming', async (req, res) => {
   }
 });
 
-// Update an ongoing streaming activity record
+
 router.put('/stop-streaming/:id', async (req, res) => {
   try {
     const { id } = req.params;

@@ -4,27 +4,28 @@ const Artist = require("../models/Artist.model");
 const fileUploader = require("../config/cloudinary.config");
 const { isAuthenticated, isAdmin } = require("../middlewares/jwt.middleware");
 
+const mongoose = require("mongoose");
 
-const mongoose = require('mongoose');
-
-
-
-router.post("/artist", fileUploader.single("image"),   async (req, res, next) => {
+router.post("/artist", fileUploader.single("image"), async (req, res, next) => {
   try {
     if (!req.file) {
-        return res.status(400).send("No files uploaded.");
-      }
+      return res.status(400).send("No files uploaded.");
+    }
 
     const { name, genre, popularity } = req.body;
 
-    const newArtist = await Artist.create({ name, genre, image:req.file.path, popularity });
+    const newArtist = await Artist.create({
+      name,
+      genre,
+      image: req.file.path,
+      popularity,
+    });
     res.status(201).json({ artist: newArtist });
   } catch (err) {
     console.error("Error creating artist:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 router.get("/artist", async (req, res, next) => {
   try {
@@ -36,13 +37,12 @@ router.get("/artist", async (req, res, next) => {
   }
 });
 
-
 router.get("/artist/:id", async (req, res, next) => {
   try {
     const artistId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(artistId)) {
-        return res.status(400).json({ message: "Specified id is not valid" });
-      }
+      return res.status(400).json({ message: "Specified id is not valid" });
+    }
     const artist = await Artist.findById(artistId);
     if (!artist) {
       return res.status(404).json({ error: "Artist not found" });
@@ -54,13 +54,12 @@ router.get("/artist/:id", async (req, res, next) => {
   }
 });
 
-
 router.put("/artist/:id", async (req, res, next) => {
   try {
     const artistId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(artistId)) {
-        return res.status(400).json({ message: "Specified id is not valid" });
-      }
+      return res.status(400).json({ message: "Specified id is not valid" });
+    }
     const { name, genre, image, popularity } = req.body;
     const updatedArtist = await Artist.findByIdAndUpdate(
       artistId,
@@ -77,13 +76,12 @@ router.put("/artist/:id", async (req, res, next) => {
   }
 });
 
-
 router.delete("/artist/:id", async (req, res, next) => {
   try {
     const artistId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(artistId)) {
-        return res.status(400).json({ message: "Specified id is not valid" });
-      }
+      return res.status(400).json({ message: "Specified id is not valid" });
+    }
     const deletedArtist = await Artist.findByIdAndRemove(artistId);
     if (!deletedArtist) {
       return res.status(404).json({ error: "Artist not found" });
@@ -95,21 +93,16 @@ router.delete("/artist/:id", async (req, res, next) => {
   }
 });
 
-
-
-
 router.get("/artist/:artistId/album", async (req, res) => {
   try {
     const { artistId } = req.params;
 
-    
     const artist = await Artist.findById(artistId).populate("album");
 
     if (!artist) {
       return res.status(404).json({ error: "Artist not found" });
     }
 
-    
     const albums = artist.albums;
     res.json({ albums });
   } catch (error) {
@@ -118,12 +111,4 @@ router.get("/artist/:artistId/album", async (req, res) => {
   }
 });
 
-
-
 module.exports = router;
-
-
-
-
-
-

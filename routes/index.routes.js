@@ -1,26 +1,25 @@
 const router = require("express").Router();
-const fileUploader = require('../config/cloudinary.config');
-const {isAuthenticated} = require('../middlewares/jwt.middleware');
+const fileUploader = require("../config/cloudinary.config");
+const { isAuthenticated } = require("../middlewares/jwt.middleware");
 const User = require("../models/User.model");
-
 
 router.get("/", (req, res, next) => {
   res.json("All good in here");
 });
 
+router.post(
+  "/upload",
+  fileUploader.single("image"),
+  isAuthenticated,
+  (req, res, next) => {
+    if (!req.file) {
+      next(new Error("No file uploaded!"));
+      return;
+    }
 
-
-router.post("/upload", fileUploader.single("image"), isAuthenticated, (req, res, next) => {
- 
-  if (!req.file) {
-    next(new Error("No file uploaded!"));
-    return;
+    res.json({ image: req.file.path });
   }
-
-
-  res.json({ image: req.file.path });
-});
-
+);
 
 router.get("/users", (req, res) => {
   const userId = req.payload._id;
@@ -48,14 +47,14 @@ router.get("/users", (req, res) => {
 });
 
 router.put("/users", isAuthenticated, (req, res) => {
-  const {_id, image } = req.body;
+  const { _id, image } = req.body;
 
-  User.findByIdAndUpdate(_id, { image }, {new: true})
-    .then(updatedUser => {
-      res.json({ updatedUser })
+  User.findByIdAndUpdate(_id, { image }, { new: true })
+    .then((updatedUser) => {
+      res.json({ updatedUser });
     })
-    .catch(err => console.error(err))
-})
+    .catch((err) => console.error(err));
+});
 
 router.delete("/users/:username/image", async (req, res) => {
   try {
@@ -73,8 +72,5 @@ router.delete("/users/:username/image", async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
-
-
 
 module.exports = router;
