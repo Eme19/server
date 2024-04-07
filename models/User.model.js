@@ -32,13 +32,21 @@
      role: { type: String, enum: ["user", "admin"], default: "user" },
     
      consent: {
-       type: Boolean,
-       default: false,
-     },
-     googleId: {
-       type: String,
-       unique: true, 
+      type: Boolean,
+      default: false,
     },
+    country: {
+      type: String,
+      enum: ['UK', "NIGERIA", 'USA', 'CANADA', 'FRANCE', 'OTHER'], // Add all the valid country values
+    },
+    state: {
+      type: String, 
+    },
+ 
+    //  googleId: {
+    //    type: String,
+    //    unique: true, 
+    // },
 
     library: [
       {

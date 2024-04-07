@@ -3,6 +3,7 @@ const Album = require("../models/Album.model");
 const Artist = require("../models/Artist.model");
 const fileUploader = require("../config/cloudinary.config");
 const { isAuthenticated, isAdmin } = require("../middlewares/jwt.middleware");
+const Track = require("../models/Track.model");
 
 const mongoose = require("mongoose");
 
@@ -93,7 +94,7 @@ router.delete("/artist/:id", async (req, res, next) => {
   }
 });
 
-router.get("/artist/:artistId/album", async (req, res) => {
+router.get("/artist/:artistId/albums", async (req, res) => {
   try {
     const { artistId } = req.params;
 
@@ -103,11 +104,40 @@ router.get("/artist/:artistId/album", async (req, res) => {
       return res.status(404).json({ error: "Artist not found" });
     }
 
-    const albums = artist.albums;
+    const albums = artist.album;
     res.json({ albums });
   } catch (error) {
     console.error("Error fetching artist's albums:", error);
     res.status(500).json({ error: "Error fetching artist's albums" });
+  }
+});
+
+router.get("/artist/:artistId", async (req, res) => {
+  try {
+    const artistId = req.params.artistId;
+    const artist = await Artist.findById(artistId);
+
+    if (!artist) {
+      return res.status(404).json({ message: "Artist not found" });
+    }
+
+    res.status(200).json(artist);
+  } catch (error) {
+    console.error("Error fetching artist details:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/artist/:artistId/tracks", async (req, res) => {
+  try {
+    const { artistId } = req.params;
+
+    const tracks = await Track.find({ artist: artistId });
+
+    res.json({ tracks });
+  } catch (error) {
+    console.error("Error fetching artist's tracks:", error);
+    res.status(500).json({ error: "Error fetching artist's tracks" });
   }
 });
 

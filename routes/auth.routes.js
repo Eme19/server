@@ -5,17 +5,36 @@ const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 const { isAuthenticated, isAdmin } = require("../middlewares/jwt.middleware");
 
-function isGmailOrYahooEmail(email) {
-  const gmailPattern = /@(gmail\.com|googlemail\.com)$/i;
-  const yahooPattern = /@(yahoo\.com|yahoo\.co\.[a-z]{2})$/i;
 
-  if (gmailPattern.test(email)) {
-    return "Gmail";
-  } else if (yahooPattern.test(email)) {
-    return "Yahoo Mail";
-  } else {
-    return "Other";
+
+
+
+
+const countries = ["COUNTRY", "UK", "USA", "FRANCE", "NIGERIA", "OTHER"];
+const states = {
+  UK: ["London", "Manchester", "Birmingham"],
+  USA: ["New York", "California", "Texas"],
+  FRANCE: ["PARIS", "LYON", "SAINT TROPEZ"],
+  CANADA: ["TORONTO", "¡QUEBE"],
+  NIGERIA: ["Lagos", "Abuja"],
+  OTHER: [],
+};
+
+router.get("/countries", (req, res) => {
+  res.json(countries);
+});
+
+router.get("/states/:country", (req, res) => {
+  const country = req.params.country.toUpperCase(); // Ensure consistency in case
+  if (!countries.includes(country)) {
+    return res.status(400).json({ error: "Invalid country" });
   }
+  const countryStates = states[country] || [];
+  res.json(countryStates);
+});
+
+function isValidEmail(email) {
+  return email.includes("@");
 }
 
 router.get("/profile/:id", async (req, res, next) => {
@@ -29,6 +48,9 @@ router.get("/profile/:id", async (req, res, next) => {
     }
 
     res.status(200).json({ user: userProfile });
+
+
+
   } catch (error) {
     console.error("Error fetching user profile:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -39,27 +61,39 @@ let userCount = 0;
 
 router.post("/signup", async (req, res, next) => {
   try {
-    const { username, email, password, state, country, consent } = req.body;
+    const { username, email, password, state, country, consent, role } = req.body;
 
-    if (!email || !password || !username) {
-      return res
-        .status(400)
-        .json({ message: "Please provide email, username, and password" });
-    }
+    if (!state) {
+      return res.status(401).json({ errorState: "Please select state"});
+  }
+  
+  if (!username) {
+      return res.status(401).json({ errorUsername: "Please enter valid username"});
+  }
+  
 
-    // Validate email format
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailPattern.test(email)) {
+  if (!country) {
+      return res.status(404).json({ errorCountry: "Please select country" });
+  }
+
+
+
+  if (!country) {
+    return res.status(401).json({ errorCountry: "Please select country" });
+}
+
+
+
+
+
+    if (!isValidEmail(email)) {
       return res.status(400).json({ message: "Invalid email format" });
     }
-
-    const emailType = isGmailOrYahooEmail(email);
 
     const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
     if (!passwordRegex.test(password)) {
       return res.status(400).json({
-        message:
-          "Password must have at least 6 characters and include at least one number, one lowercase letter, and one uppercase letter.",
+        message: "Password must have at least 6 characters and include at least one number, one lowercase letter, and one uppercase letter.",
       });
     }
 
@@ -80,12 +114,19 @@ router.post("/signup", async (req, res, next) => {
     });
     userCount++;
 
+    
+    console.log("registerUser", registerUser)
+
+
+
     res.status(201).json({ user: registerUser });
+    
   } catch (error) {
     console.error("Error during user registration:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 router.get("/user-count", async (req, res) => {
   try {
@@ -131,6 +172,66 @@ router.put("/edit/profile/:id", async (req, res, next) => {
   }
 });
 
+// router.post("/login", (req, res, next) => {
+//   const { username, email, password } = req.body;
+
+//   if (!(email || username) || !password) {
+//     return res
+//       .status(400)
+//       .json({ message: "Provide email or username and password" });
+//   }
+
+//   let check;
+//   if (email) {
+//     check = { email };
+//   } else {
+//     check = { username };
+//   }
+
+//   User.findOne(check)
+//     .then((foundUserDB) => {
+//       if (!foundUserDB) {
+//         res.status(401).json({
+//           message: "User not found",
+//         });
+//       }
+
+//       const correctPassword = bcrypt.compareSync(
+//         password,
+//         foundUserDB.password
+//       );
+
+//       if (correctPassword) {
+//         const { _id, username, email, state, country } = foundUserDB;
+//         const role = foundUserDB.role || "user";
+//         const payload = { _id, username, email, state, country, role };
+
+//         const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
+//           algorithm: "HS256",
+//           expiresIn: "6h",
+//         });
+//         return res.status(200).json({ authToken: authToken, user: payload });
+//       } else {
+//         return res.status(401).json({
+//           message: "Authenticate Failed",
+//         });
+//       }
+//     })
+//     .catch((err) => {
+//       console.error("Error during login:", err);
+//       return res
+//         .status(500)
+//         .json({ message: "Error during login", error: err.message });
+//     });
+// });
+
+
+
+
+
+
+
+
 router.post("/login", (req, res, next) => {
   const { username, email, password } = req.body;
 
@@ -150,29 +251,36 @@ router.post("/login", (req, res, next) => {
   User.findOne(check)
     .then((foundUserDB) => {
       if (!foundUserDB) {
-        res.status(401).json({
+        return res.status(401).json({
           message: "User not found",
         });
       }
 
-      const correctPassword = bcrypt.compareSync(
-        password,
-        foundUserDB.password
-      );
+      // Check if foundUserDB is null before accessing its properties
+      if (foundUserDB && foundUserDB.password) {
+        const correctPassword = bcrypt.compareSync(
+          password,
+          foundUserDB.password
+        );
 
-      if (correctPassword) {
-        const { _id, username, email, state, country } = foundUserDB;
-        const role = foundUserDB.role || "user";
-        const payload = { _id, username, email, state, country, role };
+        if (correctPassword) {
+          const { _id, username, email, state, country } = foundUserDB;
+          const role = foundUserDB.role || "user";
+          const payload = { _id, username, email, state, country, role };
 
-        const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
-          algorithm: "HS256",
-          expiresIn: "6h",
-        });
-        return res.status(200).json({ authToken: authToken, user: payload });
+          const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
+            algorithm: "HS256",
+            expiresIn: "9h",
+          });
+          return res.status(200).json({ authToken: authToken, user: payload });
+        } else {
+          return res.status(401).json({
+            message: "Authenticate Failed",
+          });
+        }
       } else {
         return res.status(401).json({
-          message: "Authenticate Failed",
+          message: "User password not found",
         });
       }
     })
@@ -184,11 +292,16 @@ router.post("/login", (req, res, next) => {
     });
 });
 
+
+
+
+
+
 router.get("/verify", isAuthenticated, (req, res, next) => {
   res.status(200).json(req.payload);
 });
 
-router.get("/admin", isAuthenticated, isAdmin, (req, res) => {
+router.get("/admin", isAdmin, (req, res) => {
   res.json({ message: "Admin authenticated successfully!" });
 });
 

@@ -19,6 +19,10 @@ router.get("/album", async (req, res, next) => {
 });
 
 
+
+
+
+
 router.get("/album/:id", async (req, res, nex) =>{
   const albumId = req.params.id;
   try{

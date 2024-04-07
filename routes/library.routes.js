@@ -27,14 +27,39 @@ router.get("/username/:username", isAuthenticated, async (req, res) => {
   }
 });
 
+// router.get("/recently-added", isAuthenticated, async (req, res) => {
+//   try {
+//     const { _id } = req.payload;
+//     console.log("req", req);
+
+//     const user = await User.findById(_id).populate({
+//       path: "library",
+//       options: { sort: { date_added: -1 } },
+//     });
+
+//     if (!user) {
+//       return res.status(404).json({ error: "User not found" });
+//     }
+
+//     const recentlyAddedAlbums = user.library;
+// console.log("recentlyAddedAlbums", recentlyAddedAlbums)
+//     res.json({ recentlyAddedAlbums });
+//   } catch (error) {
+//     console.error("Error fetching recently added albums:", error);
+//     res.status(500).json({ error: "Error fetching recently added albums" });
+//   }
+// });
+
+
+
 router.get("/recently-added", isAuthenticated, async (req, res) => {
   try {
     const { _id } = req.payload;
-    console.log("req", req);
 
     const user = await User.findById(_id).populate({
       path: "library",
       options: { sort: { date_added: -1 } },
+      populate: { path: "artist" } // Populate artist information
     });
 
     if (!user) {
@@ -43,12 +68,38 @@ router.get("/recently-added", isAuthenticated, async (req, res) => {
 
     const recentlyAddedAlbums = user.library;
 
-    res.json({ recentlyAddedAlbums });
+    res.json({ recentlyAddedAlbums, artists: user.artists });
   } catch (error) {
     console.error("Error fetching recently added albums:", error);
     res.status(500).json({ error: "Error fetching recently added albums" });
   }
 });
+
+
+router.get("/recently-added/tracks", isAuthenticated, async (req, res) => {
+  try {
+    const { _id } = req.payload;
+
+    const user = await User.findById(_id).populate({
+      path: "library",
+      match: { type: 'track' }, // Filter only tracks
+      options: { sort: { date_added: -1 } },
+      populate: { path: "artist" } // Populate artist information
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const recentlyAddedTracks = user.library;
+
+    res.json({ recentlyAddedTracks, artists: user.artists });
+  } catch (error) {
+    console.error("Error fetching recently added tracks:", error);
+    res.status(500).json({ error: "Error fetching recently added tracks" });
+  }
+});
+
 
 router.post("/add", isAuthenticated, async (req, res) => {
   try {
@@ -73,6 +124,36 @@ router.post("/add", isAuthenticated, async (req, res) => {
     res.status(500).json({ error: "Error adding album to library" });
   }
 });
+
+
+router.post("/add/track", isAuthenticated, async (req, res) => {
+  try {
+    const { userId, trackId } = req.body;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (!trackId) {
+      return res.status(400).json({ error: "Invalid track ID" });
+    }
+
+    if (user.library.includes(trackId)) {
+      return res.status(400).json({ error: "Track already in library" });
+    }
+
+    user.library.push(trackId);
+    await user.save();
+
+    res.json({ message: "Track added to library successfully" });
+  } catch (error) {
+    console.error("Error adding track to library:", error);
+    res.status(500).json({ error: "Error adding track to library" });
+  }
+});
+
 
 router.post("/remove/:albumId", async (req, res) => {
   try {

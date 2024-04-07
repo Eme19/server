@@ -38,6 +38,27 @@ router.get("/search", async (req, res) => {
   }
 });
 
+
+
+router.get("/all/search", async (req, res) => {
+  try {
+    const albums = await Album.find({});
+    const tracks = await Track.find({});
+    const artists = await Artist.find({});
+
+    const results = {
+      albums,
+      tracks,
+      artists,
+    };
+
+    res.status(200).json({ data: results });
+  } catch (err) {
+    console.error("Error while retrieving data:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;
 
 

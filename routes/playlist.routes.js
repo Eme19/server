@@ -7,31 +7,85 @@ const { isAuthenticated } = require("../middlewares/jwt.middleware");
 
 const mongoose = require("mongoose");
 
+// router.post(
+//   "/create",
+//   fileUploader.single("image"),
+//   isAuthenticated,
+//   async (req, res, next) => {
+//     try {
+//       const { description, name, trackId } = req.body;
+
+//       if (!mongoose.Types.ObjectId.isValid(trackId)) {
+//         return res
+//           .status(400)
+//           .json({ message: "Specified trackId is not valid" });
+//       }
+
+//       const selectedTrack = await Track.findById(trackId);
+
+//       if (!selectedTrack) {
+//         return res.status(400).json({ error: "No valid track selected." });
+//       }
+
+//       const createPlaylistDB = await Playlist.create({
+//         description,
+//         image: req.file.path,
+//         name,
+//         track: selectedTrack,
+//       });
+
+//       res.status(201).json({ createPlaylistDB });
+//       console.log("Created playlist:", createPlaylistDB);
+//     } catch (error) {
+//       console.error("Error creating playlist:", error);
+//       res.status(500).json({ error: "Internal server error" });
+//     }
+//   }
+// );
+
+
+
+
+
+
+
+
+
+
+
 router.post(
   "/create",
   fileUploader.single("image"),
   isAuthenticated,
   async (req, res, next) => {
     try {
-      const { description, name, trackId } = req.body;
+      const { description, name, trackIds } = req.body;
 
-      if (!mongoose.Types.ObjectId.isValid(trackId)) {
-        return res
-          .status(400)
-          .json({ message: "Specified trackId is not valid" });
+
+      if (!Array.isArray(trackIds)) {
+        return res.status(400).json({ message: "Track IDs must be provided as an array." });
       }
 
-      const selectedTrack = await Track.findById(trackId);
-
-      if (!selectedTrack) {
-        return res.status(400).json({ error: "No valid track selected." });
+      // Validate each trackId
+      const isValidTrackIds = trackIds.every((trackId) => mongoose.Types.ObjectId.isValid(trackId));
+      if (!isValidTrackIds) {
+        return res.status(400).json({ message: "One or more specified track IDs are not valid." });
       }
 
+      // Fetch selected tracks
+      const selectedTracks = await Track.find({ _id: { $in: trackIds } });
+
+      // Check if all tracks are valid
+      if (selectedTracks.length !== trackIds.length) {
+        return res.status(400).json({ message: "One or more selected tracks are invalid." });
+      }
+
+      // Create playlist with selected tracks
       const createPlaylistDB = await Playlist.create({
         description,
         image: req.file.path,
         name,
-        track: selectedTrack,
+        track: selectedTracks,
       });
 
       res.status(201).json({ createPlaylistDB });
@@ -42,6 +96,11 @@ router.post(
     }
   }
 );
+
+
+
+
+
 
 router.get("/playlist/all", async (req, res, next) => {
   try {

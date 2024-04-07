@@ -114,4 +114,16 @@ router.delete("/track/:id", async (req, res, next) => {
   }
 });
 
+
+
+// router.get('/tracks', async (req, res) => {
+//   try {
+//     const tracks = await Track.find().populate('album');
+//     res.json(tracks);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
+
 module.exports = router;
