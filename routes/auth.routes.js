@@ -6,13 +6,8 @@ const saltRounds = 10;
 const { isAuthenticated, isAdmin } = require("../middlewares/jwt.middleware");
 
 
-// const configureCors = require('./corsMiddleware');
 
-// router.use(configureCors());
-
-
-
-const countries = ["COUNTRY", "UK", "USA", "FRANCE", "NIGERIA", "OTHER"];
+const countries = [ "UK", "USA", "FRANCE", "NIGERIA", "OTHER"];
 const states = {
   UK: ["London", "Manchester", "Birmingham"],
   USA: ["New York", "California", "Texas"],

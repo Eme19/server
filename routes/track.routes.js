@@ -6,9 +6,9 @@ const cloudinary = require("cloudinary").v2;
 
 
 const { isAuthenticated } = require("../middlewares/jwt.middleware");
-const configureCors = require('./corsMiddleware');
+// const configureCors = require('./corsMiddleware');
 
-router.use(configureCors());
+// router.use(configureCors());
 const mongoose = require("mongoose");
 
 router.get("/track", async (req, res, next) => {
