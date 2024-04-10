@@ -13,7 +13,7 @@ const cookieParser = require("cookie-parser");
 // unless the request if from the same domain, by default express wont accept POST requests
 const cors = require("cors");
 
-const FRONTEND_URL =  "https://play-client-side-eme19s-projects.vercel.app"
+const FRONTEND_URL = process.env.ORIGIN || "https://play-client-side-eme19s-projects.vercel.app"
 
 // Middleware configuration
 module.exports = (app) => {
@@ -22,14 +22,9 @@ module.exports = (app) => {
   app.set("trust proxy", 1);
 
   // controls a very specific header to pass headers from the frontend
-  app.use(
-    cors({
-      origin: [FRONTEND_URL], // Allow requests from the specified frontend URL
-      methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Specify allowed HTTP methods
-      allowedHeaders: "Content-Type,Authorization", // Specify allowed headers
-      credentials: true // Allow sending cookies and other credentials
-    })
-  );
+  app.use(cors({
+    origin: 'https://uplay-git-main-eme19s-projects.vercel.app'
+  }));
 
   // In development environment the app logs
   app.use(logger("dev"));
