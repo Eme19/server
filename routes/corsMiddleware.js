@@ -3,8 +3,8 @@
 const cors = require('cors');
 
 const corsOptions = {
-  origin: 'https://uplay-git-main-eme19s-projects.vercel.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: 'https://uplay-git-main-eme19s-projects.vercel.app' ,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS' ],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 

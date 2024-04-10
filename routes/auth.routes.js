@@ -6,9 +6,9 @@ const saltRounds = 10;
 const { isAuthenticated, isAdmin } = require("../middlewares/jwt.middleware");
 
 
-// const configureCors = require('./corsMiddleware');
+const configureCors = require('./corsMiddleware');
 
-// router.use(configureCors());
+router.use(configureCors());
 
 
 
