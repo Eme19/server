@@ -25,7 +25,7 @@ module.exports = (app) => {
   app.use(
     cors({
       origin: [FRONTEND_URL],
-      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', ' OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
     })
   );

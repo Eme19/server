@@ -27,7 +27,7 @@ router.get("/countries", (req, res) => {
 });
 
 router.get("/states/:country", (req, res) => {
-  const country = req.params.country.toUpperCase(); // Ensure consistency in case
+  const country = req.params.country.toUpperCase(); 
   if (!countries.includes(country)) {
     return res.status(400).json({ error: "Invalid country" });
   }
