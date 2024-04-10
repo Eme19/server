@@ -24,7 +24,7 @@ module.exports = (app) => {
   // controls a very specific header to pass headers from the frontend
   app.use(
     cors({
-      origin: 'https://uplay-d6tb.onrender.com',
+      origin: [FRONTEND_URL],
       methods: ['GET', 'POST', 'PUT', 'DELETE', ' OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
     })
