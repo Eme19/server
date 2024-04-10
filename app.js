@@ -11,29 +11,16 @@ const express = require("express");
 
 const app = express();
 
-// app.use((req, res, next) => {
-//     res.setHeader("Cross-Origin-Opener-Policy" , "same-origin");
-//     res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-//     next();
-//   });
-
-
-
-
-
 app.use((req, res, next) => {
+    res.setHeader("Cross-Origin-Opener-Policy" , "same-origin");
+    res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+    next();
+  });
 
-  res.setHeader('Access-Control-Allow-Origin', 'https://play-client-side-eme19s-projects.vercel.app');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, DELETE, HEAD, OPTIONS'); 
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); 
 
 
-  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
 
- 
-  next();
-});
+
 
 
 
