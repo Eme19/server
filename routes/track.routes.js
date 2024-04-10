@@ -4,8 +4,11 @@ const Album = require("../models/Album.model");
 const fileUploader = require("../config/cloudinary.config");
 const cloudinary = require("cloudinary").v2;
 
-const { isAuthenticated } = require("../middlewares/jwt.middleware");
 
+const { isAuthenticated } = require("../middlewares/jwt.middleware");
+const configureCors = require('./corsMiddleware');
+
+router.use(configureCors());
 const mongoose = require("mongoose");
 
 router.get("/track", async (req, res, next) => {

@@ -3,6 +3,10 @@ const fileUploader = require("../config/cloudinary.config");
 const { isAuthenticated } = require("../middlewares/jwt.middleware");
 const User = require("../models/User.model");
 
+const configureCors = require('./corsMiddleware');
+
+router.use(configureCors());
+
 router.get("/", (req, res, next) => {
   res.json("All good in here");
 });
