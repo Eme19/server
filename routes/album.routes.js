@@ -4,6 +4,10 @@ const Track = require("../models/Track.model");
 const Artist = require("../models/Artist.model"); 
 const fileUploader = require("../config/cloudinary.config");
 const { isAuthenticated, isAdmin } = require("../middlewares/jwt.middleware");
+const configureCors = require('./corsMiddleware');
+
+router.use(configureCors());
+
 
 const mongoose = require('mongoose');
 
