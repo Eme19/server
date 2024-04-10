@@ -58,8 +58,12 @@ router.get("/profile/:id", async (req, res, next) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 let userCount = 0;
+
+
+
+
+
 
 router.post("/signup", async (req, res, next) => {
   try {
