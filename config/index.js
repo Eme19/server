@@ -13,7 +13,7 @@ const cookieParser = require("cookie-parser");
 // unless the request if from the same domain, by default express wont accept POST requests
 const cors = require("cors");
 
-const FRONTEND_URL = process.env.ORIGIN || "https://u-play-one.vercel.app"
+const FRONTEND_URL = process.env.ORIGIN || "https://u-play.vercel.app"
 
 // Middleware configuration
 module.exports = (app) => {
@@ -27,7 +27,7 @@ module.exports = (app) => {
       origin: [FRONTEND_URL],
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
-      credentials: true,
+      // credentials: true,
       // preflightContinue: false,
       // optionsSuccessStatus: 204
     })
