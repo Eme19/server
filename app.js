@@ -8,18 +8,13 @@ const express = require("express");
 
 const app = express();
 
-// app.use((req, res, next) => {
-//   res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
-//   res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-//   next();
-// });
-
-
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://u-play.vercel.app');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
   next();
 });
+
+
 
 
 
