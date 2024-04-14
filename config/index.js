@@ -55,13 +55,12 @@ const cookieParser = require("cookie-parser");
 module.exports = (app) => {
   app.set("trust proxy", 1);
 
-  // Enable CORS
   app.use(
     cors({
       origin: "http://localhost:3000",
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
-      credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+      credentials: true, 
     })
   );
 
