@@ -12,12 +12,10 @@ const express = require("express");
 const app = express();
 
 app.use((req, res, next) => {
-    res.setHeader("Cross-Origin-Opener-Policy" , "same-origin");
-    res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-    next();
-  });
-
-
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+  next();
+});
 
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
 require("./config")(app);
@@ -41,28 +39,21 @@ app.use("/api", albumRoutes);
 const artistRoutes = require("./routes/artist.routes");
 app.use("/api", artistRoutes);
 
-
 const libraryRoutes = require("./routes/library.routes");
 app.use("/library", libraryRoutes);
 
 const searchRoutes = require("./routes/searchbar.routes");
-app.use("/api", searchRoutes)
-
-
+app.use("/api", searchRoutes);
 
 const appactivityRoutes = require("./routes/appactivity.routes");
-app.use("/activity", appactivityRoutes)
+app.use("/activity", appactivityRoutes);
 
 const googleAuthRoutes = require("./routes/googleid.routes");
-app.use("/google", googleAuthRoutes)
-
+app.use("/google", googleAuthRoutes);
 
 const streamRoutes = require("./routes/streaming.routes");
-app.use("/stream", streamRoutes)
+app.use("/stream", streamRoutes);
 
-// const spotifyRoutes = require("./routes/spotify.routes");
-// app.use("/spotify", spotifyRoutes);
-// ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
 
 module.exports = app;

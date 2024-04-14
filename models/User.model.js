@@ -50,10 +50,14 @@
 
     library: [
       {
-         type: Schema.Types.ObjectId,
-         ref: "Album",
-     },
-   ],
+        type: Schema.Types.ObjectId,
+        ref: "Album",
+      },
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Track",
+      }
+    ]
   },
   {
     timestamps: true,

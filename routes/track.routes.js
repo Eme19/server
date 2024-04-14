@@ -4,11 +4,8 @@ const Album = require("../models/Album.model");
 const fileUploader = require("../config/cloudinary.config");
 const cloudinary = require("cloudinary").v2;
 
-
 const { isAuthenticated } = require("../middlewares/jwt.middleware");
-// const configureCors = require('./corsMiddleware');
 
-// router.use(configureCors());
 const mongoose = require("mongoose");
 
 router.get("/track", async (req, res, next) => {
@@ -116,17 +113,5 @@ router.delete("/track/:id", async (req, res, next) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-
-
-// router.get('/tracks', async (req, res) => {
-//   try {
-//     const tracks = await Track.find().populate('album');
-//     res.json(tracks);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
 
 module.exports = router;

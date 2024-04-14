@@ -5,9 +5,7 @@ const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 const { isAuthenticated, isAdmin } = require("../middlewares/jwt.middleware");
 
-
-
-const countries = [ "UK", "USA", "FRANCE", "NIGERIA", "OTHER"];
+const countries = ["UK", "USA", "FRANCE", "NIGERIA", "OTHER"];
 const states = {
   UK: ["London", "Manchester", "Birmingham"],
   USA: ["New York", "California", "Texas"],
@@ -22,7 +20,7 @@ router.get("/countries", (req, res) => {
 });
 
 router.get("/states/:country", (req, res) => {
-  const country = req.params.country.toUpperCase(); 
+  const country = req.params.country.toUpperCase();
   if (!countries.includes(country)) {
     return res.status(400).json({ error: "Invalid country" });
   }
@@ -45,9 +43,6 @@ router.get("/profile/:id", async (req, res, next) => {
     }
 
     res.status(200).json({ user: userProfile });
-
-
-
   } catch (error) {
     console.error("Error fetching user profile:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -55,47 +50,37 @@ router.get("/profile/:id", async (req, res, next) => {
 });
 let userCount = 0;
 
-
-
-
-
-
 router.post("/signup", async (req, res, next) => {
   try {
-    const { username, email, password, state, country, consent, role } = req.body;
+    const { username, email, password, state, country, consent, role } =
+      req.body;
 
-    if (!state) {
-      return res.status(401).json({ errorState: "Please select state"});
-  }
-  
-  if (!username) {
-      return res.status(401).json({ errorUsername: "Please enter valid username"});
-  }
-  
+    if (!username) {
+      return res
+        .status(401)
+        .json({ errorUsername: "Please enter a valid username" });
+    }
 
-  if (!country) {
-      return res.status(404).json({ errorCountry: "Please select country" });
-  }
-
-
-
-  if (!country) {
-    return res.status(401).json({ errorCountry: "Please select country" });
-}
-
-
-
-
-
-    if (!isValidEmail(email)) {
-      return res.status(400).json({ message: "Invalid email format" });
+    if (!email || !isValidEmail(email)) {
+      return res
+        .status(400)
+        .json({ message: "Please enter a valid email address" });
     }
 
     const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
     if (!passwordRegex.test(password)) {
       return res.status(400).json({
-        message: "Password must have at least 6 characters and include at least one number, one lowercase letter, and one uppercase letter.",
+        message:
+          "Password must have at least 6 characters and include at least one number, one lowercase letter, and one uppercase letter.",
       });
+    }
+
+    if (!state) {
+      return res.status(401).json({ errorState: "Please select a state" });
+    }
+
+    if (!country) {
+      return res.status(401).json({ errorCountry: "Please select a country" });
     }
 
     const foundUserDB = await User.findOne({ email });
@@ -105,6 +90,7 @@ router.post("/signup", async (req, res, next) => {
 
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashedPassword = bcrypt.hashSync(password, salt);
+
     const registerUser = await User.create({
       username,
       email,
@@ -113,21 +99,34 @@ router.post("/signup", async (req, res, next) => {
       country,
       consent,
     });
-    userCount++;
 
-    
-    console.log("registerUser", registerUser)
+    const token = jwt.sign(
+      {
+        userId: registerUser._id,
+        email: registerUser.email,
+        username: registerUser.username,
+      },
+      process.env.TOKEN_SECRET,
+      {
+        expiresIn: "1d",
+      }
+    );
 
+    res.cookie("authToken", token, {
+      httpOnly: true,
+    });
 
+    res
+      .status(201)
+      .json({ message: "User created successfully", user: registerUser });
 
-    res.status(201).json({ user: registerUser });
-    
+    console.log("registerUser", registerUser);
+    console.log("token", token);
   } catch (error) {
     console.error("Error during user registration:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
 
 router.get("/user-count", async (req, res) => {
   try {
@@ -173,66 +172,6 @@ router.put("/edit/profile/:id", async (req, res, next) => {
   }
 });
 
-// router.post("/login", (req, res, next) => {
-//   const { username, email, password } = req.body;
-
-//   if (!(email || username) || !password) {
-//     return res
-//       .status(400)
-//       .json({ message: "Provide email or username and password" });
-//   }
-
-//   let check;
-//   if (email) {
-//     check = { email };
-//   } else {
-//     check = { username };
-//   }
-
-//   User.findOne(check)
-//     .then((foundUserDB) => {
-//       if (!foundUserDB) {
-//         res.status(401).json({
-//           message: "User not found",
-//         });
-//       }
-
-//       const correctPassword = bcrypt.compareSync(
-//         password,
-//         foundUserDB.password
-//       );
-
-//       if (correctPassword) {
-//         const { _id, username, email, state, country } = foundUserDB;
-//         const role = foundUserDB.role || "user";
-//         const payload = { _id, username, email, state, country, role };
-
-//         const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
-//           algorithm: "HS256",
-//           expiresIn: "6h",
-//         });
-//         return res.status(200).json({ authToken: authToken, user: payload });
-//       } else {
-//         return res.status(401).json({
-//           message: "Authenticate Failed",
-//         });
-//       }
-//     })
-//     .catch((err) => {
-//       console.error("Error during login:", err);
-//       return res
-//         .status(500)
-//         .json({ message: "Error during login", error: err.message });
-//     });
-// });
-
-
-
-
-
-
-
-
 router.post("/login", (req, res, next) => {
   const { username, email, password } = req.body;
 
@@ -257,7 +196,6 @@ router.post("/login", (req, res, next) => {
         });
       }
 
-      // Check if foundUserDB is null before accessing its properties
       if (foundUserDB && foundUserDB.password) {
         const correctPassword = bcrypt.compareSync(
           password,
@@ -273,6 +211,14 @@ router.post("/login", (req, res, next) => {
             algorithm: "HS256",
             expiresIn: "9h",
           });
+
+          res.cookie("authToken", authToken, {
+            httpOnly: true,
+            sameSite: "Strict",
+            secure: true,
+            path: "/",
+          });
+
           return res.status(200).json({ authToken: authToken, user: payload });
         } else {
           return res.status(401).json({
@@ -292,11 +238,6 @@ router.post("/login", (req, res, next) => {
         .json({ message: "Error during login", error: err.message });
     });
 });
-
-
-
-
-
 
 router.get("/verify", isAuthenticated, (req, res, next) => {
   res.status(200).json(req.payload);
