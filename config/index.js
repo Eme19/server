@@ -20,7 +20,7 @@ module.exports = (app) => {
 
   app.use(
     cors({
-      origin: "https://u-play.vercel.app",
+      origin: [FRONTEND_URL],
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,
@@ -33,6 +33,7 @@ module.exports = (app) => {
 
   app.use(logger("dev"));
 
+  // To have access to `body` property in the request
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
