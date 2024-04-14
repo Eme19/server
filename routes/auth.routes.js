@@ -114,8 +114,11 @@ router.post("/signup", async (req, res, next) => {
 
     res.cookie("authToken", token, {
       httpOnly: true,
+      sameSite: "Strict", 
+      secure: true, 
+      path: "/", 
     });
-
+    
     res
       .status(201)
       .json({ message: "User created successfully", user: registerUser });
