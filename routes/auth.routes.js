@@ -3,7 +3,7 @@ const User = require("../models/User.model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const saltRounds = 10;
-const { isAuthenticated, isAdmin } = require("../middlewares/jwt.middleware");
+const {corsMiddleware, isAuthenticated, isAdmin } = require("../middlewares/jwt.middleware");
 
 const countries = ["UK", "USA", "FRANCE", "NIGERIA", "OTHER"];
 const states = {
