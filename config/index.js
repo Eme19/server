@@ -20,7 +20,7 @@ module.exports = (app) => {
 
   app.use(
     cors({
-      origin:  "https://u-play.vercel.app",
+      origin:  "https://uplay-server.onrender.com",
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,
