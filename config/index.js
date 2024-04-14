@@ -9,7 +9,7 @@ const cookieParser = require("cookie-parser");
 
 const cors = require("cors");
 
-const FRONTEND_URL = process.env.ORIGIN || "https://u-play.vercel.app"
+// const FRONTEND_URL = process.env.ORIGIN || "https://u-play.vercel.app"
 
 
 module.exports = (app) => {
@@ -20,12 +20,10 @@ module.exports = (app) => {
 
   app.use(
     cors({
-      origin: [FRONTEND_URL],
+      origin:  "https://u-play.vercel.app",
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,
-      preflightContinue: false, 
-      optionsSuccessStatus: 204 
     })
   );
   
