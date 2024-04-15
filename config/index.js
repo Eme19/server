@@ -9,7 +9,7 @@ const cookieParser = require("cookie-parser");
 
 const cors = require("cors");
 
-// const FRONTEND_URL = process.env.ORIGIN || "https://u-play.vercel.app"
+const FRONTEND_URL = process.env.ORIGIN || "https://u-play.vercel.app"
 
 
 module.exports = (app) => {
@@ -20,7 +20,7 @@ module.exports = (app) => {
 
   app.use(
     cors({
-      origin:  "https://uplay-server.onrender.com",
+      origin: [FRONTEND_URL],
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,
