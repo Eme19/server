@@ -12,11 +12,15 @@ app.use((req, res, next) => {
 });
 
 
+app.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
 
 const config = require("./config");
 config(app);
 
 // require("./config")(app);
+
 
 
 const indexRoutes = require("./routes/index.routes");
