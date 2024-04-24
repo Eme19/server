@@ -9,10 +9,18 @@ router.get("/", (req, res, next) => {
 
 router.post(
   "/upload",
+  (req, res, next) => {
+    console.log(req.headers); 
+    next();
+  },
   fileUploader.single("image"),
   isAuthenticated,
   (req, res, next) => {
     if (!req.file) {
+      (req, res, next) => {
+        console.log(req.headers); // Log request headers
+        next();
+      },
       next(new Error("No file uploaded!"));
       return;
     }

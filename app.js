@@ -19,7 +19,11 @@ app.get('/', (req, res) => {
 const config = require("./config");
 config(app);
 
-// require("./config")(app);
+
+
+const helmet = require('helmet');
+
+app.use(helmet());
 
 
 
