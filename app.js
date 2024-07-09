@@ -1,9 +1,12 @@
 
 require("dotenv").config();
 require("./db");
+const cookieParser = require('cookie-parser');
 
 const express = require("express");
 const app = express();
+
+app.use(cookieParser());
 
 app.use((req, res, next) => {
   res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
@@ -59,6 +62,12 @@ app.use("/google", googleAuthRoutes);
 
 const streamRoutes = require("./routes/streaming.routes");
 app.use("/stream", streamRoutes);
+
+
+const activecontentRoutes = require("./routes/activecontent.routes");
+app.use("/active", activecontentRoutes);
+
+
 
 require("./error-handling")(app);
 
