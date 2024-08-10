@@ -1,9 +1,19 @@
 {
   "version": 2,
-  "builds": [{ "src": "server.js", "use": "@vercel/node" }],
+  "builds": [
+    { "src": "server.js", "use": "@vercel/node" }
+  ],
   "routes": [
-    { "src": "/(.*)", "dest": "server.js" }
+    { "src": "/api/(.*)", "dest": "/server.js" },
+    { "src": "/auth/(.*)", "dest": "/server.js" },
+    { "src": "/library/(.*)", "dest": "/server.js" },
+    { "src": "/activity/(.*)", "dest": "/server.js" },
+    { "src": "/google/(.*)", "dest": "/server.js" },
+    { "src": "/stream/(.*)", "dest": "/server.js" },
+    { "src": "/active/(.*)", "dest": "/server.js" },
+    { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
+
 
 
