@@ -4,6 +4,7 @@
     { "src": "server.js", "use": "@vercel/node" }
   ],
   "routes": [
+
     { "src": "/api/(.*)", "dest": "/server.js" },
     { "src": "/auth/(.*)", "dest": "/server.js" },
     { "src": "/library/(.*)", "dest": "/server.js" },
@@ -11,7 +12,10 @@
     { "src": "/google/(.*)", "dest": "/server.js" },
     { "src": "/stream/(.*)", "dest": "/server.js" },
     { "src": "/active/(.*)", "dest": "/server.js" },
-    { "src": "/(.*)", "dest": "/public/$1" }
+
+    { "src": "/(.*)", "dest": "/public/$1" },
+
+    { "src": "/(.*)", "dest": "/server.js" }
   ]
 }
 
