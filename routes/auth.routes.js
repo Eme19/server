@@ -219,7 +219,7 @@ router.post("/login", (req, res, next) => {
             httpOnly: true,
             sameSite: "None",
             secure: true,
-            path: "/",
+          
           });
 
           return res.status(200).json({ authToken: authToken, user: payload });
