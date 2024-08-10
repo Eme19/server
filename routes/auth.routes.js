@@ -215,12 +215,23 @@ router.post("/login", (req, res, next) => {
             expiresIn: "9h",
           });
 
+          // res.cookie("authToken", authToken, {
+          //   httpOnly: true,
+          //   sameSite: "Strict",
+          //   secure: true,
+          //   path: "/",
+          // });
+
+
+
           res.cookie("authToken", authToken, {
             httpOnly: true,
             sameSite: "Strict",
-            secure: true,
+            secure: process.env.NODE_ENV === 'production', // Only set secure flag in production
             path: "/",
           });
+      
+
 
           return res.status(200).json({ authToken: authToken, user: payload });
         } else {
