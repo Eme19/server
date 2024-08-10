@@ -217,7 +217,7 @@ router.post("/login", (req, res, next) => {
 
           res.cookie("authToken", authToken, {
             httpOnly: true,
-            sameSite: "Strict",
+            sameSite: "None",
             secure: true,
             path: "/",
           });
