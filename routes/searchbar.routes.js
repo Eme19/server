@@ -11,7 +11,7 @@ router.get("/search", async (req, res) => {
   if (!searchTerm) {
     return res.status(400).json({ error: "Search term is required" });
   }
-
+  
   console.log("Received search request with term:", searchTerm);
   try {
     const albums = await Album.find({
