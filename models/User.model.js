@@ -30,6 +30,11 @@ const userSchema = new Schema(
       type: String,
     },
 
+    role: { type: String,
+       enum: ["user", "admin"], 
+       default: "user" },
+
+
     library: [
       {
         type: Schema.Types.ObjectId,

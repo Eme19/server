@@ -10,6 +10,10 @@ const playlistSchema = new Schema(
       type: String,
       required: [true, "Image is required."],
     },
+    user: {  
+      type: Schema.Types.ObjectId,
+      ref: "User", 
+    },
     name: {
       type: String,
     },

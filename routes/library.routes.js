@@ -1,6 +1,10 @@
-// const router = require("express").Router();
-// const Album = require("../models/Album.model");
-// const User = require("../models/User.model");
+
+
+
+
+
+
+
 
 
 const router = require("express").Router();
@@ -10,11 +14,14 @@ const User = require("../models/User.model");
 const { isAuthenticated } = require("../middlewares/jwt.middleware");
 
 
-router.get("/username/:username", isAuthenticated, async (req, res) => {
+router.get("/username/:username",isAuthenticated, async (req, res) => {
     try {
       const { username } = req.params; 
   
-     
+      if (!username) {
+        return res.status(400).json({ error: "Username is missing or invalid" });
+      }
+  
       console.log(req.headers);
   
       const user = await User.findOne({ username }); 
@@ -32,43 +39,43 @@ router.get("/username/:username", isAuthenticated, async (req, res) => {
   });
   
 
-// // GET user data by username
-// router.get("/username/:username", isAuthenticated,  async (req, res) => {
-//   try {
-//     const { username } = req.params; // Get the username from the route parameter
 
-//     const user = await User.findOne({ username }); // Find the user by username
 
-//     if (!user) {
-//       return res.status(404).json({ error: "User not found" });
-//     }
 
-//     // Send the user data as JSON response
-//     res.json({ user });
-//   } catch (error) {
-//     console.error("Error fetching user data:", error);
-//     res.status(500).json({ error: "Error fetching user data" });
-//   }
-// });
 
-// GET user library
-router.get("/library", isAuthenticated, async (req, res) => {
+
+
+
+
+
+
+
+router.get("/recently-added", isAuthenticated, async (req, res) => {
   try {
-    const { userId } = req.user; 
+    const { _id } = req.payload;
+console.log("req", req);
 
-    const user = await User.findById(userId).populate("library");
+    const user = await User.findById(_id).populate({
+      path: "library",
+      options: { sort: { date_added: -1 } }
+    });
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const library = user.library;
-    res.json({ library });
+    const recentlyAddedAlbums = user.library;
+
+    res.json({ recentlyAddedAlbums });
   } catch (error) {
-    console.error("Error fetching user library:", error);
-    res.status(500).json({ error: "Error fetching user library" });
+    console.error("Error fetching recently added albums:", error);
+    res.status(500).json({ error: "Error fetching recently added albums" });
   }
 });
+
+
+
+
 
 
 router.post("/add", isAuthenticated, async (req, res) => {
@@ -96,17 +103,21 @@ router.post("/add", isAuthenticated, async (req, res) => {
 });
 
 
-router.delete("/remove/:albumId", isAuthenticated, async (req, res) => {
+router.post("/remove/:albumId", async (req, res) => {
   try {
-    const { albumId } = req.params; 
-    const { userId } = req.user;
-    const user = await User.findById(userId);
+     const albumId = req.params.albumId;
+   // const { _id } = req.payload;
+   console.log("req.payload!!!!!", req.payload)
+   const _id = req.payload._id
+    const user = await User.findById(_id);
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
     const albumIndex = user.library.indexOf(albumId);
+    console.log("albumIndex", albumIndex)
+
     if (albumIndex === -1) {
       return res.status(404).json({ error: "Album not found in user's library" });
     }
@@ -114,7 +125,7 @@ router.delete("/remove/:albumId", isAuthenticated, async (req, res) => {
     user.library.splice(albumIndex, 1);
     await user.save();
 
-    res.json({ message: "Album removed from library successfully" });
+    res.status(200).json({ message: "Album removed from library successfully" });
   } catch (error) {
     console.error("Error removing album from library:", error);
     res.status(500).json({ error: "Error removing album from library" });

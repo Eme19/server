@@ -2,14 +2,14 @@ const router = require("express").Router();
 const Album = require("../models/Album.model");
 const Artist = require("../models/Artist.model");
 const fileUploader = require("../config/cloudinary.config");
-const { isAuthenticated } = require("../middlewares/jwt.middleware");
+const { isAuthenticated, isAdmin } = require("../middlewares/jwt.middleware");
 
 
 const mongoose = require('mongoose');
 
 
 
-router.post("/artist", fileUploader.single("image"), async (req, res, next) => {
+router.post("/artist", fileUploader.single("image"),   async (req, res, next) => {
   try {
     if (!req.file) {
         return res.status(400).send("No files uploaded.");

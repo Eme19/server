@@ -3,11 +3,11 @@ const Track = require("../models/Track.model");
 const Playlist = require("../models/Playlist.model");
 const fileUploader = require("../config/cloudinary.config");
 
-
+const { isAuthenticated } = require("../middlewares/jwt.middleware");
 
 const mongoose = require('mongoose');
 
-router.post('/create', fileUploader.single('image'), async (req, res, next) => {
+router.post('/create', fileUploader.single('image'),isAuthenticated, async (req, res, next) => {
   try {
     const { description, name, trackId } = req.body;
 
@@ -37,59 +37,20 @@ router.post('/create', fileUploader.single('image'), async (req, res, next) => {
 });
 
 
-// router.post('/create', fileUploader.single('image'), async (req, res, next) => {
-//   try {
-//     const { description, name, trackIds } = req.body;
-
-
-//     if (!Array.isArray(trackIds) || trackIds.length === 0) {
-//       return res.status(400).json({ error: 'No valid tracks selected.' });
-//     }
-
-
-//     const areAllValidIds = trackIds.every((trackId) =>
-//       mongoose.Types.ObjectId.isValid(trackId)
-//     );
-
-//     if (!areAllValidIds) {
-//       return res.status(400).json({ message: 'One or more track IDs are not valid.' });
-//     }
-
-
-//     const selectedTracks = await Track.find({ _id: { $in: trackIds } });
-
-//     if (!selectedTracks || selectedTracks.length !== trackIds.length) {
-//       return res.status(400).json({ error: 'Not all selected tracks are valid.' });
-//     }
-
-  
-//     const createPlaylistDB = await Playlist.create({
-//       description,
-//       image: req.file.path,
-//       name,
-//       track: selectedTracks,
-//     });
-
-//     res.status(201).json({ playlist: createPlaylistDB });
-//     console.log('Created playlist:', createPlaylistDB);
-//   } catch (error) {
-//     console.error('Error creating playlist:', error);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
 
 
 
 
-router.get('/all', async (req, res, next) => {
+router.get('/playlist/all', async (req, res, next) => {
   try {
-    const playlists = await Playlist.find().populate('user');
+    const playlists = await Playlist.find()
     res.status(200).json({ all: playlists });
   } catch (err) {
     console.error('Error while getting all playlists', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 // Get playlist by ID
 
@@ -99,7 +60,7 @@ router.get('/all', async (req, res, next) => {
 
 
 
-router.get('/playlist/:id', async (req, res, next) => {
+router.get('/playlist/:id',  async (req, res, next) => {
   try {
     const playlistId = req.params.id;
 
@@ -119,7 +80,7 @@ router.get('/playlist/:id', async (req, res, next) => {
       return;
     }
 
-    res.status(200).json({playlist: getPlaylistByIdDB});
+    res.status(200).json({ getPlaylistByIdDB});
   } catch (error) {
     console.error('Error fetching playlist by ID:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -130,7 +91,7 @@ router.get('/playlist/:id', async (req, res, next) => {
 
 
 // Update playlist by ID
-router.put('/playlist/:playlistId', async (req, res, next) => {
+router.put('/playlist/:playlistId',isAuthenticated,  async (req, res, next) => {
   try {
     const { playlistId } = req.params;
     if (!mongoose.Types.ObjectId.isValid(playlistId)) {
@@ -155,7 +116,7 @@ router.put('/playlist/:playlistId', async (req, res, next) => {
 });
 
 // Delete playlist by ID
-router.delete('/playlist/:playlistId', async (req, res, next) => {
+router.delete('/playlist/:playlistId', isAuthenticated,  async (req, res, next) => {
   try {
     const { playlistId } = req.params;
     if (!mongoose.Types.ObjectId.isValid(playlistId)) {

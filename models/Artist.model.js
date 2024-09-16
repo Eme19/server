@@ -14,6 +14,11 @@ const artistSchema = new Schema(
       type: [String],
       required: [true, "Image is required."],
     },
+    album: {
+      type: [Schema.Types.ObjectId],
+        ref: "Album",
+      },
+  
 
     popularity: {
       type: Number,
